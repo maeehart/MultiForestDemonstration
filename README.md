@@ -165,7 +165,7 @@ The GUI offers three ways of adjustments.
 <b>ATTENTION:</b> remember to push the button "Change constraints". The enabled constraints are first considered after the button has been pushed (the same is the case if they need to be changed). <br>
 <b>TIP:</b> if enabled constraints need to be considered, start with those before adjusting and optimizing for epsilon constraints and reference points!
 
-![image](./mfGUIexample.PNG)
+![image](./MFGUIExample.png)
 
 
 ## Export of Data
