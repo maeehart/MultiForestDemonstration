@@ -1,0 +1,8 @@
+__pycache__
+multiFunctionalOptimization.py
+.ipynb_checkpoints
+*.zip
+*.csv
+*.json
+*.lp
+*.h5
