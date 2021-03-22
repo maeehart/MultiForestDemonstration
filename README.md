@@ -1,7 +1,7 @@
 ![alt text](https://github.com/maeehart/multiforestOptimizationNotebook/blob/master/MultiForest_logo_color_150.jpg)
 
 #### Last update:
-17-02-2021
+22-03-2021
 
 
 ## General
@@ -164,6 +164,8 @@ The GUI offers three ways of adjustments.
 <b>Enabled constraints:</b> By ticking the box those additional constraints can be considered. <br>
 <b>ATTENTION:</b> remember to push the button "Change constraints". The enabled constraints are first considered after the button has been pushed (the same is the case if they need to be changed). <br>
 <b>TIP:</b> if enabled constraints need to be considered, start with those before adjusting and optimizing for epsilon constraints and reference points!
+
+![image](./MFGUIExample.png)
 
 
 ## Export of Data
