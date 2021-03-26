@@ -3,6 +3,9 @@
 #### Last update:
 22-03-2021
 
+#### Please note
+
+This repository is merely for demonstration of the capabilities. The notebooks can be read, but not run because essential packages are missing.
 
 ## General
 The <b>multiforestOptimizationNotebook</b> was developed for the project "MultiForest - Management for multifunctionality in European forests in the era of bioeconomy" (https://www.jyu.fi/BERG/berg-projects-1/forest-values). The tool allows optimizing forest management for providing multiple forest ecosystem services (FES).  In case of MultiForest, FES targets of national sectoral policies were addressed from the countries FIN, GER, NOR, and SWE. Therefore, the requirements in terms of forest policy and management were elaborated in each country, similarities were identified and transferred into a common set of optimization rules. This set of rules allows each project partner to transfer the targets of the different national sectoral policies into a multi-objective optimization problem.
