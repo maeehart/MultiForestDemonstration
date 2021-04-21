@@ -1,17 +1,10 @@
-![alt text](https://github.com/maeehart/multiforestOptimizationNotebook/blob/master/MultiForest_logo_color_150.jpg)
 
 #### Last update:
-22-03-2021
+21-04-2021
 
 #### Please note
 
 This repository is merely for demonstration of the capabilities. The notebooks can be read, but not run because essential packages are missing.
-
-## General
-The <b>multiforestOptimizationNotebook</b> was developed for the project "MultiForest - Management for multifunctionality in European forests in the era of bioeconomy" (https://www.jyu.fi/BERG/berg-projects-1/forest-values). The tool allows optimizing forest management for providing multiple forest ecosystem services (FES).  In case of MultiForest, FES targets of national sectoral policies were addressed from the countries FIN, GER, NOR, and SWE. Therefore, the requirements in terms of forest policy and management were elaborated in each country, similarities were identified and transferred into a common set of optimization rules. This set of rules allows each project partner to transfer the targets of the different national sectoral policies into a multi-objective optimization problem.
-
-The optimization tool was developed under the lead of the company <b>FinnOpt</b> (www.finnopt.com) together with project partners from: University of Jyväskylä (JYU), Technical University of Munich (TUM), Norwegian Institute of Bioeconomy Research (NIBIO), and Swedish University of Agricultural Sciences (SLU).
-
 
 ## Getting started
 
@@ -61,28 +54,27 @@ The <b>first year gets only the regime “initial_state”</b> and can be consid
 
 If *columTypes* is an empty dictionary, then the class tries to make all the column data types to float if possible. For column types "Relative to Area" and "Relative to volume" the class makes a new column, which name "Total_" combined with the original column type.
 
- 
-#### MISSING??? 
+#### 5.
 ```mfo.addRegimeClassifications(regimeClassNames = regimeClassNames,regimeClassregimes=regimeClassregimes)```
-Obsolete. To be removed from future versions.
+(OPTIONAL) Classify the regimes into category and create a new column, e.g. indicating if regime is "CCF_3, CCF_4, BAUwGTR" (TRUE/FLASE)
 
-#### 5. 
+#### 6. 
 (OPTIONAL) Calculate additional columns from data. As an example, ```mfo.data["new_column_name"] = mfo.data["column1"].values*mfo.data["column2].values``` creates a new column which is the itemwise product of two old columns.
 
-#### 6.
+#### 7.
 ```mfo.finalizeData(initialRegime="initial_state")``` 
 Prepares the data for optimization and makes columns with name "Relative_", which means related to the intial values. For example, a value 1.1 in a stand in certain year would mean that the value has grown 10% from the beginning to the certain year.
 
 ```InitialValues = { "key":value }``` is an optional dictionary, which gives initial values of objectives when they cannot be calculated from the input data (as defined in the previous step). The keys are the keys of objectives and the values are the values of objectives.
 
-#### 7. 
+#### 8. 
 ```mfo.defineObjectives(objectives,initialValues = initialValues)```
 Defines objectives following the objective format defined in section [Objective format](##Objective-format) and call 
 
-#### 8.
+#### 9.
 Define objectives using the format defined in section [Constraint format](##Constraint-format) and call ```mfo.calculateObjectiveRanges(debug=True)```. Evaluates the ranges of objectives by optimizing individually the ```mfo.defineConstraints(constraints)```
 
-#### 9. 
+#### 10. 
 ```mfo.showGui()```
 Shows the graphical user interface. Uses the sliders to define the preferences as described in section [Defining preferences using sliders](##Defining-preferences-using-slidres)
 
@@ -181,10 +173,3 @@ Currently, three kinds of data are exported and saved as a CSV.
 
 <b>solution & solution_alldata:</b> The first data set contains the ideal regime (or share of regimes) for each stand under the multiple objectives. The second data set (solution_alldata) additionally contains the indicator values and their timely development for each stand under the optimal regime.
 
-
-## Acknowledgement
-The multi-objective optimization tool was developed for the project <b>"MultiForest - Management for multifunctionality in European forests in the era of bioeconomy"</b>, which was supported under the umbrella of ERA-NET Cofund <b>"ForestValue"</b> by Academy of Finland, Business Finland, Federal Ministry of Agriculture, Forestry, Environment & Water Management (Austria), Agency for Renewable Resources (Germany), Research Council of Norway, Vinnova/Formas/SWEA (Sweden). ForestValue has received funding from the European Union's Horizon 2020 research and innovation program under grant agreement N° 773324.
-
-[www.forestvalue.org](https://forestvalue.org/) 
-
-![alt text](https://github.com/maeehart/multiForestOptimization/blob/master/logo_ForestValue_100.jpg)
