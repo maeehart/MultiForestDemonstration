@@ -6,3 +6,5 @@ multiFunctionalOptimization.py
 *.json
 *.lp
 *.h5
+!/EUclimate_vs_natPolicy/rslt_RCP0_keskisuomi_V11_smooth.zip
+!/FIN_natPolicyAnalysis/rslt_RCP0_keskisuomi_V11_smooth.zip
