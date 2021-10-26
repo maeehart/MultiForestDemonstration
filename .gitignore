@@ -8,3 +8,6 @@ multiFunctionalOptimization.py
 *.h5
 !/EUclimate_vs_natPolicy/rslt_RCP0_keskisuomi_V11_smooth.zip
 !/FIN_natPolicyAnalysis/rslt_RCP0_keskisuomi_V11_smooth.zip
+!/*/FIN_globiom1p5_all.csv
+!/*/FIN_globiomLTS_all.csv
+!/*/FIN_globiomNDC_all.csv
