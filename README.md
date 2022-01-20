@@ -1,4 +1,4 @@
-![alt text](./MultiForest_logo_color_150.jpg)
+![alt text](./logo_MF_150.jpg)
 
 #### Last update:
 20-01-2022
