@@ -1,10 +1,13 @@
+![alt text](./MultiForest_logo_color_150.jpg)
 
 #### Last update:
-21-04-2021
+20-01-2022
 
-#### Please note
 
-This repository is merely for demonstration of the capabilities. The notebooks can be read, but not run because essential packages are missing.
+## General
+The <b>multiforestOptimizationNotebook</b> was developed for the project "MultiForest - Management for multifunctionality in European forests in the era of bioeconomy" (https://www.jyu.fi/BERG/berg-projects-1/forest-values). The framework provides a set of rules that can be combined to create a unique multi-objective optimization problem. Particularly, it can be used to optimize forest management for forest ecosystem service and biodiversity objectives, while seeking an efficient management solution for individual forest entities (forest stands). The optimization problem can be created by adjusting the settings in a Jupyter notebook and a graphical user interphase (GUI).
+
+The optimization tool was developed under the lead of the company Silo AI together with project partners from: University of Jyväskylä, Technical University of Munich, Norwegian Institute of Bioeconomy Research, and Swedish University of Agricultural Sciences.
 
 ## Getting started
 
@@ -14,7 +17,7 @@ This repository is merely for demonstration of the capabilities. The notebooks c
 * Ortools and Pandas packages ("conda install pip"&"pip install ortools, pandas")
 * Go to the directory containing the repository
 * Run "jupyter notebook"
-* From the files tab open MultiFunctionalOptimization.ipynb
+* From the files tab open the corresponding .ipynb file
 * A browser window should open and you are ready to go
 * Quick introductions to Jupyter Notebook can be found in e.g., Youtube (see e.g., https://www.youtube.com/watch?v=jZ952vChhuI)
 
@@ -41,7 +44,7 @@ Reads the data from filename.
 
 It takes a random sample of stands to reduce computation time (if commented out "#", whole data is taken). 
 
-Input data consits of forest stand/inventory plot data simulated under different management regimes with a forest growth model. The data can be grouped into three types: 1) Indexing the data: Stand ID, year, regime; 2) Indicators for assessing forest ecosystem services (they can differ between countries); 3) Additional info like climate change scenario, represented area by NFI plot, region/province, or NUTS2 level. 
+Input data consits of forest stand/inventory plot data simulated under different management regimes with a forest growth model. The data can be grouped into three types: 1) Indexing the data: stand ID, year, regime; 2) Indicators for assessing forest ecosystem services (they can differ between countries); 3) Additional info like climate change scenario, represented area by NFI plot, region/province, or NUTS2 level. 
 
 The <b>first year gets only the regime “initial_state”</b> and can be considered as starting point for all regimes (same value for all regimes). This gets important, if indicator performances to the current situation have to be evaluated (e.g. no decline in biodiversity is allowed). 
 
@@ -54,8 +57,9 @@ The <b>first year gets only the regime “initial_state”</b> and can be consid
 
 If *columTypes* is an empty dictionary, then the class tries to make all the column data types to float if possible. For column types "Relative to Area" and "Relative to volume" the class makes a new column, which name "Total_" combined with the original column type.
 
-#### 5.
-```mfo.addRegimeClassifications(regimeClassNames = regimeClassNames,regimeClassregimes=regimeClassregimes)```
+ 
+#### 5. 
+```mfo.addRegimeClassifications(regimeClassNames = regimeClassNames,regimeClassregimes=regimeClassregimes)``` 
 (OPTIONAL) Classify the regimes into category and create a new column, e.g. indicating if regime is "CCF_3, CCF_4, BAUwGTR" (TRUE/FLASE)
 
 #### 6. 
@@ -79,6 +83,16 @@ Define objectives using the format defined in section [Constraint format](##Cons
 Shows the graphical user interface. Uses the sliders to define the preferences as described in section [Defining preferences using sliders](##Defining-preferences-using-slidres)
 
 
+## Input data
+Forest growth simulations under different management scenarios on stand/NFI plot level represent the input data. Different climate change scenarios are handled in seperate input data and optimized individually. Data can come from different ecosystem models and needs to be grouped in columns that:
+ * <b>Indexing the data:</b> stand ID, year, regime (mandatory columns)
+ * <b>Indicators representing ecosystem services</b> (country or model specific)
+ * <b>Additional information</b> (optional)  
+
+<b>IMPORTANT:</b> the first year of the data (starting year) is only once represented for each stand/plot and is indicated by the regime "initial_state". It represents the starting point for all simulated regimes - same initial stand situation for all regimes. All later years can be represented multiple times and are indicated by the corresponding regime (BAU; CCF; SA). This gets important, if indicator performances to the current situation have to be evaluated (e.g. no decline in biodiversity is allowed).
+
+![image](./regime.png)
+
 
 ## Objective format
 The objective function can be defined based on up to eight standardised attributes, arranged in the below order. <br>
@@ -94,17 +108,17 @@ The objective function can be defined based on up to eight standardised attribut
  * optimize the <b>"average"</b> over all time periods, 
  * optimize the <b>"firstYear"</b> value, 
  * optimize the <b>"sum"</b> over all years, 
- * optimize a <b>"targetYearWithSlope"</b> and consider a linear increase from the initial situation,  
- * optimize a <b>"targetYear"</b> (without linear increase), 
+ * optimize a <b>"targetYearWithSlope"</b>, aim to achive a target value in a certain year and keep it above this value for all years afterwards, consider a linear increase from the initial situation,  
+ * optimize a <b>"targetYear"</b>, same as above but without linear increase, 
  * optimize the <b>"lastYear"</b> over all time periods, 
  * optimize for "periodicTargets", each simulation period gets a certain target value (except initial year), 
  * optimize that the yearly increase is minimum <b>"minYearlyIncrease"</b>, 
  * optimize that the yearly increase is maximum <b>"maxYearlyIncrease"</b>, 
  * optimize that the periodic decrease is maximum <b>"maxDecreaseDuringNPeriods"</b>, 
- * optimize that the periodic increase in mimimum <b>"minIncreaseDuringNPeriods"</b>. 
+ * optimize that the periodic increase is mimimum <b>"minIncreaseDuringNPeriods"</b>. 
     
 (6) <b>"stand wise aggregation":</b>
- * take the <b>"sum"</b> of all stand/plot values, <br>
+ * take the <b>"sum"</b> of all stand/plot values, or of a smaller set <b>"subsetSum"</b> <br>
  * take the <b>"areaWeightedAverage"</b> of all stand/plot values, <br>
  * take the <b>"areaWeightedSum"</b> of all stand/plot values.<br>
     
@@ -115,7 +129,7 @@ The following two attributes are optional. <br>
 (7) <b>target year:</b> define the year that is optimized. Can be any year except the initial year. Is used for the objectives "targetYear" & "targetYearWithSlope".<br>
 (8) <b>periodic targets:</b> define one target value for each simulation step (except initial year). Is for example used for the demand values of GLOBIOM. 
 
-Most of the options are what they say, but some may require an additional description:
+Most of the options are what they say they are, but some may require additional description:
 - **minYearlyIncrease**: This is mathematically <img src="https://render.githubusercontent.com/render/math?math=\min_{i%20\in%20\{1,\ldots,years-1\}}f_{i+1}-f_i">, where f is the standwise aggregated objective. Note that minYearlyIncrease can be used only with maximized objectives.
 - **maxYearlyIncrease**: This is mathematically <img src="https://render.githubusercontent.com/render/math?math=\max_{i%20\in%20\{1,\ldots,years-1\}}f_{i+1}-f_i">, where f is the standwise aggregated objective. Note that maxYearlyIncrease can be used only with minimized objectives.
 - **maxDecreaseDuringNPeriods**:  This is mathematically <img src="https://render.githubusercontent.com/render/math?math=\max_{i%20\in%20\{1,\ldots,years-1\}}f_i-f_{i+N}">, where f is the standwise aggregated objective. Note that maxDecreaseDuringNPeriods can be used only with minimized objectives.
@@ -173,3 +187,10 @@ Currently, three kinds of data are exported and saved as a CSV.
 
 <b>solution & solution_alldata:</b> The first data set contains the ideal regime (or share of regimes) for each stand under the multiple objectives. The second data set (solution_alldata) additionally contains the indicator values and their timely development for each stand under the optimal regime.
 
+
+## Acknowledgement
+The project <b>MultiForest</b> was supported under the umbrella of ERA-NET Cofund <b>"ForestValue"</b> by Academy of Finland, Business Finland, Federal Ministry of Agriculture, Forestry, Environment & Water Management (Austria), Agency for Renewable Resources (Germany), Research Council of Norway, Vinnova/Formas/SWEA (Sweden). ForestValue has received funding from the European Union's Horizon 2020 research and innovation program under grant agreement N° 773324.
+
+[www.forestvalue.org](https://forestvalue.org/) 
+
+![alt text](./logo_ForestValue_100.jpg)
