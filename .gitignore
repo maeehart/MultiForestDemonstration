@@ -7,8 +7,8 @@ multiFunctionalOptimizationNor.py
 *.json
 *.lp
 *.h5
-!/EUclimate_vs_natPolicy/rslt_RCP0_keskisuomi_V11_smooth.zip
-!/FIN_natPolicyAnalysis/rslt_RCP0_keskisuomi_V11_smooth.zip
+!/EUclimate_vs_natPolicy_FIN/rslt_RCP0_CentralFinland.zip
+!/NatPolicyAnalysis_FIN/rslt_RCP0_CentralFinland.zip
 !/*/FIN_globiom1p5_all.csv
 !/*/FIN_globiomLTS_all.csv
 !/*/FIN_globiomNDC_all.csv
