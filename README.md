@@ -5,7 +5,7 @@
 
 
 ## General
-The <b>multiforestOptimizationNotebook</b> was developed for the project "MultiForest - Management for multifunctionality in European forests in the era of bioeconomy" (https://www.jyu.fi/BERG/berg-projects-1/forest-values). The framework provides a set of rules that can be combined to create a unique multi-objective optimization problem. Particularly, it can be used to optimize forest management for forest ecosystem service and biodiversity objectives, while seeking an efficient management solution for individual forest entities (forest stands). The optimization problem can be created by adjusting the settings in a Jupyter notebook and a graphical user interphase (GUI).
+The <b>MultiForest Optimization Notebook</b> was developed for the project "MultiForest - Management for multifunctionality in European forests in the era of bioeconomy" (https://www.jyu.fi/BERG/berg-projects-1/forest-values). The framework provides a set of rules that can be combined to create a unique multi-objective optimization problem. Particularly, it can be used to optimize forest management for forest ecosystem service and biodiversity objectives, while seeking an efficient management solution for individual forest entities (forest stands). The optimization problem can be created by adjusting the settings in a Jupyter notebook and a graphical user interphase (GUI).
 
 The optimization tool was developed under the lead of the company Silo AI together with project partners from: University of Jyväskylä, Technical University of Munich, Norwegian Institute of Bioeconomy Research, and Swedish University of Agricultural Sciences.
 
