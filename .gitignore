@@ -1,7 +1,5 @@
 __pycache__
-multiFunctionalOptimization.py
-multiFunctionalOptimizationNor.py
-multiFunctionalOptimizationSwe.py
+
 .ipynb_checkpoints
 *.zip
 *.csv
