@@ -8,6 +8,7 @@ __pycache__
 *.h5
 !/EUclimate_vs_natPolicy_FIN/rslt_RCP0_CentralFinland.zip
 !/NatPolicyAnalysis_FIN/rslt_RCP0_CentralFinland.zip
+!/maxMF_Analysis_FIN/rslt_RCP0_CentralFinland.zip
 !/EUclimate_vs_natPolicy_GER/rslt_RCP0_Bavaria_Germany_pause_2_V1_GLOB_sample.zip
 !/NatPolicyAnalysis_GER/rslt_RCP0_Bavaria_Germany_pause_2_V1_sample.zip
 !/*/FIN_globiom1p5_all.csv
