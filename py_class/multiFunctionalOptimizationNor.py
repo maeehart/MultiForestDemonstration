@@ -57,7 +57,7 @@ class MultiFunctionalOptimization:
 
     def readData(self,filename,sampleRatio=1,delimeter=";",
                 standsEnu = "id",regimesEnu = ["regime"],timeEnu = "year",
-                areaCol = "represented_area_by_NFIplot",samplingSubsets = None):
+                areaCol = "represented_area_by_NFIplot"):
         self.sampleRatio = sampleRatio
         self.areaCol = areaCol
         self.timeEnu = timeEnu
@@ -79,21 +79,10 @@ class MultiFunctionalOptimization:
                     self.data["combinedRegime"]+=["_"]*len(self.data)
         self.data.replace(np.nan,0,inplace=True)
         if sampleRatio < 1:
-            if samplingSubsets is None:
-                n = int(len(set(self.data[self.standsEnu].values))*sampleRatio)
-                #Setting seed to todays date: 18052021
-                np.random.seed(18052021)
-                stand_sample = np.random.choice(list(set(self.data[self.standsEnu].values)),n,replace=False)
-                display("sample size "+str(n)+"/"+str(len(set(self.data[self.standsEnu].values)))+"("+str(int(n/len(set(self.data[self.standsEnu].values))*100))+"%)")
-            else:
-                stand_sample = np.array([])
-                for val in self.data[samplingSubsets].unique():
-                    n = int(len(set(self.data[self.data[samplingSubsets] == val][self.standsEnu].values))*sampleRatio)
-                    #Setting seed to todays date: 18052021
-                    np.random.seed(18052021)
-                    stand_sample = np.append(stand_sample,np.random.choice(list(set(self.data[self.data[samplingSubsets] == val][self.standsEnu].values)),n,replace=False))
+            n = int(len(set(self.data[self.standsEnu].values))*sampleRatio)
+            stand_sample = np.random.choice(list(set(self.data[self.standsEnu].values)),n,replace=False)
+            display("sample size "+str(n)+"/"+str(len(set(self.data[self.standsEnu].values)))+"("+str(int(n/len(set(self.data[self.standsEnu].values))*100))+"%)")
             self.data = self.data[self.data[self.standsEnu].isin(stand_sample)]
-            
 
     def CalculateTotalValues(self,**kwargs):
         self.columnTypes = kwargs
@@ -192,9 +181,27 @@ class MultiFunctionalOptimization:
                     self.solver.Add(self.speciesValues[(speciesCol,year)] ==
                         sum(self.decisionFrame["Decision"].values*
                                         self.data.loc[(slice(None),year,slice(None)),speciesCol].values)/self.sampleRatio,
-                        name="constraintforSpecies"+speciesCol+"InYear"+str(year))
+                        name="constraintforSpeciesDec"+speciesCol+"InYear"+str(year))
                     if i>= periodNo:
                         self.constraints[constraintName][year] = self.solver.Add(self.speciesValues[(speciesCol,year)]-(1-reductionAmount)*self.speciesValues[(speciesCol,year-periodNo*5)]>=-1e10)
+                        
+            if self.constraintTypes[constraintName][0] == "Species increase":
+                speciesCol = self.constraintTypes[constraintName][2]
+                periodNo = self.constraintTypes[constraintName][3]
+                reductionAmount = self.constraintTypes[constraintName][4]
+                self.constraints[constraintName] = dict()
+                display(self.constraintTypes[constraintName][0] )
+                
+                for i,year in enumerate(self.years):
+                    self.speciesValues[(speciesCol,year)] = self.solver.NumVar(-self.solver.infinity(),self.solver.infinity(),speciesCol+"amountInyear"+str(year))
+                    
+                    self.solver.Add(self.speciesValues[(speciesCol,year)] ==
+                        sum(self.decisionFrame["Decision"].values*
+                                        self.data.loc[(slice(None),year,slice(None)),speciesCol].values)/self.sampleRatio,
+                        name="constraintforSpeciesInc"+speciesCol+"InYear"+str(year))
+                    if i>= periodNo:
+                        self.constraints[constraintName][year] = self.solver.Add(self.speciesValues[(speciesCol,year)]- (1 + reductionAmount) * self.speciesValues[(speciesCol, year - periodNo*5)]  <= 1e10,name = speciesCol + "valuePer"+str(periodNo)+"inYear"+str(year))
+                        
             if self.constraintTypes[constraintName][0] == "less than":
                 colname1 = self.constraintTypes[constraintName][2]
                 colname2 = self.constraintTypes[constraintName][3]
@@ -430,8 +437,8 @@ class MultiFunctionalOptimization:
             elif self.objectiveTypes[objName][3] == "targetYear":
                 targetYear = self.objectiveTypes[objName][-1]
                 for i,year in enumerate(self.years):
-                    if year > targetYear:
-                        self.solver.Add(self.objectivesByYear[(objName,year)] >= self.objective[objName] )
+                    if (i == 0 and year >targetYear) or (self.years[i-1] < targetYear and year > targetYear):
+                        self.solver.Add(self.objectivesByYear[(objName,year)] == self.objective[objName] )
             elif self.objectiveTypes[objName][3] == "periodicTargets":
                 periodicTargets = self.objectiveTypes[objName][-1]
                 for i,year in enumerate(self.years):
