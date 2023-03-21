@@ -703,4 +703,111 @@ class MultiFunctionalOptimization:
         self.printSolutionButton = widgets.Button(description='Print solution')
         self.printSolutionButton.on_click(self.printSolution)
         display(self.printSolutionButton)
+        
+    def calculateMFEyvindsonObjectiveRanges(self, debug=False):
+        self.debug=True
+        lb = {objName:np.inf for objName  in self.eyvindsonObjectives.keys()}
+        ub = {objName:-np.inf for objName  in self.eyvindsonObjectives.keys()}
+        display("Calculating objective ranges")
+        for i,objName in enumerate(tqdm(self.eyvindsonObjectives.keys(),file=sys.stdout)):
+            self.objectiveFunction = self.solver.Objective()
+            print(objName)
+            display("Optimizing for "+self.eyvindsonObjectives[objName])
+            self.objectiveFunction.SetMaximization()
+            #if self.eyvindsonObjectives[objName][2] == "max":
+            multiplier = 1
+            #elif self.eyvindsonObjectives[objName][2] == "min":
+            #multiplier = -1
+            for objName2 in self.eyvindsonObjectives.keys():
+                if objName == objName2:
+                    self.objectiveFunction.SetCoefficient(self.eyvindsonObjectives[objName2],multiplier)
+                else:
+                    # If ranges already calculated also add the other objectives with small coefficients to improve ranges:
+                    try:
+                        self.objectiveFunction.SetCoefficient(self.eyvindsonObjectives[objName2],multiplier*1e-6/(self.objectiveRangesEY[objName2][1]-self.objectiveRangesEY[objName2][0]))
+                    except AttributeError:
+                        self.objectiveFunction.SetCoefficient(self.eyvindsonObjectives[objName2],0)                        
+            #If we have already been running the GUI, then we need to remove maxDummy from objective function
+            try:
+                self.objectiveFunction.SetCoefficient(self.maxDummy,0)
+            except AttributeError:
+                pass
+            if self.debug:
+                problem = self.solver.ExportModelAsLpFormat(obfuscated=False)
+                print(problem,file=open("problem.lp","w"))
+            now = datetime.now()
+            res = self.solver.Solve()
+            time = datetime.now() - now 
+            self.solutionTimeStamp = str(now).replace(":"," ")
+            if res == self.solver.OPTIMAL:
+                display("Found an optimal solution in "+str(time.seconds)+" seconds")
+                display("Objective values are:")
+                for i,objName in enumerate(self.eyvindsonObjectives.keys()):
+                    display(self.eyvindsonObjectives[objName],self.eyvindsonObjectives[objName].solution_value())
+                    if self.eyvindsonObjectives[objName].solution_value() > ub[objName]:
+                        ub[objName] = self.eyvindsonObjectives[objName].solution_value()
+                    if self.eyvindsonObjectives[objName].solution_value() < lb[objName]:
+                        lb[objName] = self.eyvindsonObjectives[objName].solution_value()
+            else:
+                display("Could not solve")
+                if res == self.solver.FIXED_VALUE:
+                    display("Objective value fixed")
+                if res == self.solver.INFEASIBLE:
+                    display("Problem is infeasible")
+                if res == self.solver.ABNORMAL:
+                    display("Something strange in the problem")
+                if res == self.solver.NOT_SOLVED:
+                    display("Problem could not be solved for some reason")            
+        self.objectiveRangesEY = {objName: (lb[objName],ub[objName]) for objName in self.eyvindsonObjectives.keys()}           
 
+    def solveMultifunctionality(self):
+        self.objectiveFunction = self.solver.Objective()
+        self.objectiveFunction.SetMaximization()
+        multiplier = 1
+        for objName2 in self.eyvindsonObjectives.keys():
+            self.objectiveFunction.SetCoefficient(self.eyvindsonObjectives[objName2],multiplier/(self.objectiveRangesEY[objName2][1]-self.objectiveRangesEY[objName2][0])) #MAYBE need to objective - minimum to properly normalize in objective function
+        now = datetime.now()
+        res = self.solver.Solve()
+        time = datetime.now() - now
+        
+        if res == self.solver.OPTIMAL:
+            display("Found an optimal solution in "+str(time.seconds)+" seconds")
+            display("Objective values are:")
+            for i,objName in enumerate(self.eyvindsonObjectives.keys()):
+                display(self.eyvindsonObjectives[objName],self.eyvindsonObjectives[objName].solution_value())
+        else:
+            display("Could not solve")
+            if res == self.solver.FIXED_VALUE:
+                display("Objective value fixed")
+            if res == self.solver.INFEASIBLE:
+                display("Problem is infeasible")
+            if res == self.solver.ABNORMAL:
+                display("Something strange in the problem")
+            if res == self.solver.NOT_SOLVED:
+                display("Problem could not be solved for some reason")  
+            
+    
+
+    def addEyvindsonMultifunctionality(self, ecoSystemServices, aggregation = None):
+        #IF no aggregation method is specified -- then all will be assumed to be the average method
+        if aggregation is None:
+            aggregation = {}
+            for key in ecoSystemServices.keys():
+                aggregation[key] = "AVG"
+
+        #Check if dictionary exists, it not create
+        self.eyvindsonObjectives = dict()
+        
+        #CONSTRUCT value to indicate RANGE of MF -- one per ESS / BD
+        for key in ecoSystemServices.keys():
+            self.eyvindsonObjectives[key] = self.solver.NumVar(-self.solver.infinity(),self.solver.infinity(),"MF"+str(key))
+            if aggregation[key]=="AVG":
+                self.solver.Add(self.eyvindsonObjectives[key] == sum((self.objective[objName]-self.objectiveRanges[objName][0])/(self.objectiveRanges[objName][1]-self.objectiveRanges[objName][0]) for objName in ecoSystemServices[key].keys())/len(ecoSystemServices[key].keys()),name="EyvindsonObjective"+key)
+            elif aggregation[key]=="MIN":
+                for objName in ecoSystemServices[key].keys():
+                    self.solver.Add(self.eyvindsonObjectives[key]<=(self.objective[objName]-self.objectiveRanges[objName][0])/(self.objectiveRanges[objName][1]-self.objectiveRanges[objName][0]),name="EyvindsonObjective"+key+objName) # CHECK __ IS THIS MAXIMIZING THE MINIMUM OR MINIMIZING THE MAXIMUM?
+            #self.solver.Add(self.objective[objName]<=self.objectivesByYear[(objName,year)])
+            #for objName in self.ecoSystemServices[key].keys():
+            #    self.solver.Add(self.eyvindsonObjectives[key] >= sum((self.objective[objName]-self.objectiveRanges[objName][0])/(self.objectiveRanges[objName][1]-self.objectiveRanges[objName][0])),name="EyvindsonObjective"+key+objName)
+        #CALCLATE RANGES for ESS Groups:
+        self.calculateMFEyvindsonObjectiveRanges()
